@@ -7,9 +7,9 @@ const CRLF = "\r\n";
  * メール本文を生成（数値のみ、見出し・単位なし）
  */
 export function buildBody(f: TaviFormData): string {
-  const four = repeatCRLF(4);
-  const two = repeatCRLF(2);
-  const one = repeatCRLF(1);
+  const four = repeatCRLF(3); // joinで+1されて4行になる
+  const two = repeatCRLF(1); // joinで+1されて2行になる
+  const one = repeatCRLF(0); // joinで+1されて1行になる
 
   const lines: string[] = [
     String(f.analyst ?? ''),
