@@ -68,7 +68,6 @@ export default function TaviForm() {
             label="症例識別名"
             name="case_name"
             register={register}
-            onFieldChange={handleAutoSave}
             error={errors.case_name}
             onFieldChange={handleAutoSave}
           />
@@ -76,7 +75,6 @@ export default function TaviForm() {
             label="解析者"
             name="analyst"
             register={register}
-            onFieldChange={handleAutoSave}
             error={errors.analyst}
             onFieldChange={handleAutoSave}
           />
@@ -116,6 +114,7 @@ export default function TaviForm() {
           error={errors.ca_score}
           type="number"
           step="0.1"
+          onFieldChange={handleAutoSave}
         />
       </div>
 
