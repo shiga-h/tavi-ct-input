@@ -50,7 +50,7 @@ export default function FormField({
         {...rest}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`w-full px-2 py-1.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+        className={`w-full px-2 py-1.5 text-sm text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 ${
           error ? 'border-red-500' : warning ? 'border-yellow-500' : 'border-gray-300'
         }`}
       />
