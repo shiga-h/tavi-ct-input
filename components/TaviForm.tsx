@@ -7,7 +7,7 @@ import { TaviFormData } from '@/types/form';
 import { useFormStore } from '@/store/formStore';
 import { buildBody, openGmailOrMailto } from '@/lib/email';
 import FormField from './FormField';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 export default function TaviForm() {
   const { formData, setFormData, settings, autoSave } = useFormStore();
@@ -25,6 +25,18 @@ export default function TaviForm() {
 
   // デバウンス用のタイマー
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // 前回のformDataを保存（無限ループを防ぐため）
+  const prevFormDataRef = useRef<string>('');
+  
+  // ストアのformDataが変更されたときにフォームをリセット
+  useEffect(() => {
+    const currentFormDataStr = JSON.stringify(formData);
+    // 前回の値と異なる場合のみリセット（無限ループを防ぐ）
+    if (prevFormDataRef.current !== currentFormDataStr) {
+      prevFormDataRef.current = currentFormDataStr;
+      reset(formData);
+    }
+  }, [formData, reset]);
   
   // 自動保存用のハンドラー
   const handleAutoSave = () => {
