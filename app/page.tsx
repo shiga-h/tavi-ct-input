@@ -3,23 +3,41 @@
 import { useState } from 'react';
 import TaviForm from '@/components/TaviForm';
 import Settings from '@/components/Settings';
+import { useFormStore } from '@/store/formStore';
 
 export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
+  const { resetFormData } = useFormStore();
+
+  const handleClear = () => {
+    if (window.confirm('すべての入力内容をクリアしますか？')) {
+      resetFormData();
+    }
+  };
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-6 flex justify-between items-center gap-4">
           <h1 className="text-3xl font-bold text-gray-900">
             TAVI術前CT所見入力
           </h1>
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            {showSettings ? 'フォームに戻る' : '設定'}
-          </button>
+          <div className="flex gap-2">
+            {!showSettings && (
+              <button
+                onClick={handleClear}
+                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              >
+                すべてクリア
+              </button>
+            )}
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            >
+              {showSettings ? 'フォームに戻る' : 'メール設定'}
+            </button>
+          </div>
         </div>
 
         {showSettings ? <Settings /> : <TaviForm />}
