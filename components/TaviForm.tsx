@@ -7,15 +7,16 @@ import { TaviFormData } from '@/types/form';
 import { useFormStore } from '@/store/formStore';
 import { buildBody, openGmailOrMailto } from '@/lib/email';
 import FormField from './FormField';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 export default function TaviForm() {
-  const { formData, setFormData, settings, autoSave } = useFormStore();
+  const { formData, setFormData, resetFormData, settings, autoSave } = useFormStore();
   const {
     register,
     handleSubmit,
     watch,
     getValues,
+    reset,
     formState: { errors },
   } = useForm<TaviFormData>({
     resolver: zodResolver(formSchema),
@@ -57,6 +58,15 @@ export default function TaviForm() {
   const getWarning = (fieldName: keyof TaviFormData, min: number, max: number): string | null => {
     const value = watch(fieldName);
     return validateRange(value || '', min, max);
+  };
+
+  // すべてクリア
+  const handleClear = () => {
+    if (window.confirm('すべての入力内容をクリアしますか？')) {
+      resetFormData();
+      // storeのformDataが初期値になったので、それでフォームをリセット
+      reset(useFormStore.getState().formData);
+    }
   };
 
   return (
@@ -786,6 +796,17 @@ export default function TaviForm() {
             type="number"
           />
         </div>
+      </div>
+
+      {/* クリアボタン */}
+      <div className="bg-white p-3 rounded-lg shadow">
+        <button
+          type="button"
+          onClick={handleClear}
+          className="w-full bg-gray-500 text-white py-2 px-6 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 font-medium"
+        >
+          すべてクリア
+        </button>
       </div>
 
       {/* 送信ボタン */}
