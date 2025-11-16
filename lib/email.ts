@@ -10,6 +10,7 @@ export function buildBody(f: TaviFormData): string {
   const four = repeatCRLF(3); // joinで+1されて4行になる
   const two = repeatCRLF(1); // joinで+1されて2行になる
   const one = repeatCRLF(0); // joinで+1されて1行になる
+  const five = repeatCRLF(4); // joinで+1されて5行になる
 
   const lines: string[] = [
     String(f.analyst ?? ''),
@@ -35,8 +36,9 @@ export function buildBody(f: TaviFormData): string {
     fmtDecimal1(f.ms_stretch),
     fmtDecimal1(f.perpen_lr),
     fmtDecimal1(f.perpen_crca),
+    five,
     fmtDecimal1(f.rootangle),
-    one,
+    five,
     fmtDecimal1(f.rt_pcia_min),
     fmtDecimal1(f.rt_pcia_max),
     fmtDecimal1(f.rt_mcia_min),
