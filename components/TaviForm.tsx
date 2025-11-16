@@ -12,7 +12,7 @@ import { useRef } from 'react';
 export default function TaviForm() {
   const { formData, setFormData, settings, autoSave } = useFormStore();
   const {
-    register: originalRegister,
+    register,
     handleSubmit,
     watch,
     getValues,
@@ -39,20 +39,6 @@ export default function TaviForm() {
       const currentValues = getValues();
       setFormData(currentValues);
     }, 500);
-  };
-
-  // register関数をラップして、すべてのフィールドに自動保存を追加
-  const register = <K extends keyof TaviFormData>(name: K) => {
-    const registration = originalRegister(name);
-    const { onChange, ...rest } = registration;
-    
-    return {
-      ...rest,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        onChange(e);
-        handleAutoSave();
-      },
-    };
   };
 
   const onSubmit = (data: TaviFormData) => {
@@ -82,13 +68,17 @@ export default function TaviForm() {
             label="症例識別名"
             name="case_name"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.case_name}
+            onFieldChange={handleAutoSave}
           />
           <FormField
             label="解析者"
             name="analyst"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.analyst}
+            onFieldChange={handleAutoSave}
           />
         </div>
       </div>
@@ -100,6 +90,7 @@ export default function TaviForm() {
             label="phases_a"
             name="phases_a"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.phases_a}
             type="number"
             step="1"
@@ -108,6 +99,7 @@ export default function TaviForm() {
             label="phases_b"
             name="phases_b"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.phases_b}
             type="number"
             step="1"
@@ -134,6 +126,7 @@ export default function TaviForm() {
             label="annulus area (mm²)"
             name="annulus_area"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.annulus_area}
             warning={getWarning('annulus_area', 0, 1000)}
             type="number"
@@ -143,6 +136,7 @@ export default function TaviForm() {
             label="annulus peri (mm)"
             name="annulus_peri"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.annulus_peri}
             warning={getWarning('annulus_peri', 0, 200)}
             type="number"
@@ -151,6 +145,7 @@ export default function TaviForm() {
             label="annulus min (mm)"
             name="annulus_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.annulus_min}
             warning={getWarning('annulus_min', 0, 100)}
             type="number"
@@ -159,6 +154,7 @@ export default function TaviForm() {
             label="annulus max (mm)"
             name="annulus_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.annulus_max}
             warning={getWarning('annulus_max', 0, 100)}
             type="number"
@@ -173,6 +169,7 @@ export default function TaviForm() {
             label="STJ min (mm)"
             name="stj_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.stj_min}
             warning={getWarning('stj_min', 0, 100)}
             type="number"
@@ -181,6 +178,7 @@ export default function TaviForm() {
             label="STJ max (mm)"
             name="stj_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.stj_max}
             warning={getWarning('stj_max', 0, 100)}
             type="number"
@@ -195,6 +193,7 @@ export default function TaviForm() {
             label="SOV diameter L (mm)"
             name="sov_l"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.sov_l}
             warning={getWarning('sov_l', 0, 100)}
             type="number"
@@ -203,6 +202,7 @@ export default function TaviForm() {
             label="SOV diameter R (mm)"
             name="sov_r"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.sov_r}
             warning={getWarning('sov_r', 0, 100)}
             type="number"
@@ -211,6 +211,7 @@ export default function TaviForm() {
             label="SOV diameter N (mm)"
             name="sov_n"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.sov_n}
             warning={getWarning('sov_n', 0, 100)}
             type="number"
@@ -225,6 +226,7 @@ export default function TaviForm() {
             label="LCC Ht. (mm)"
             name="lcc_ht"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lcc_ht}
             warning={getWarning('lcc_ht', 0, 100)}
             type="number"
@@ -233,6 +235,7 @@ export default function TaviForm() {
             label="RCC Ht. (mm)"
             name="rcc_ht"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rcc_ht}
             warning={getWarning('rcc_ht', 0, 100)}
             type="number"
@@ -241,6 +244,7 @@ export default function TaviForm() {
             label="NCC Ht. (mm)"
             name="ncc_ht"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.ncc_ht}
             warning={getWarning('ncc_ht', 0, 100)}
             type="number"
@@ -249,6 +253,7 @@ export default function TaviForm() {
             label="LCA Ht. (mm)"
             name="lca_ht"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lca_ht}
             warning={getWarning('lca_ht', 0, 100)}
             type="number"
@@ -257,6 +262,7 @@ export default function TaviForm() {
             label="RCA Ht. (mm)"
             name="rca_ht"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rca_ht}
             warning={getWarning('rca_ht', 0, 100)}
             type="number"
@@ -271,6 +277,7 @@ export default function TaviForm() {
             label="MS oblique (mm)"
             name="ms_oblique"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.ms_oblique}
             warning={getWarning('ms_oblique', 0, 100)}
             type="number"
@@ -279,6 +286,7 @@ export default function TaviForm() {
             label="MS stretch (mm)"
             name="ms_stretch"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.ms_stretch}
             warning={getWarning('ms_stretch', 0, 100)}
             type="number"
@@ -293,6 +301,7 @@ export default function TaviForm() {
             label="perpen L/R (deg.)"
             name="perpen_lr"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.perpen_lr}
             warning={getWarning('perpen_lr', -180, 180)}
             type="number"
@@ -302,6 +311,7 @@ export default function TaviForm() {
             label="perpen Cr/Ca (deg.)"
             name="perpen_crca"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.perpen_crca}
             warning={getWarning('perpen_crca', -180, 180)}
             type="number"
@@ -330,6 +340,7 @@ export default function TaviForm() {
             label="Rt.PCIA min (mm)"
             name="rt_pcia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_pcia_min}
             warning={getWarning('rt_pcia_min', 0, 50)}
             type="number"
@@ -338,6 +349,7 @@ export default function TaviForm() {
             label="Rt.PCIA max (mm)"
             name="rt_pcia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_pcia_max}
             warning={getWarning('rt_pcia_max', 0, 50)}
             type="number"
@@ -352,6 +364,7 @@ export default function TaviForm() {
             label="Rt.MCIA min (mm)"
             name="rt_mcia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_mcia_min}
             warning={getWarning('rt_mcia_min', 0, 50)}
             type="number"
@@ -360,6 +373,7 @@ export default function TaviForm() {
             label="Rt.MCIA max (mm)"
             name="rt_mcia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_mcia_max}
             warning={getWarning('rt_mcia_max', 0, 50)}
             type="number"
@@ -374,6 +388,7 @@ export default function TaviForm() {
             label="Rt.DCIA min (mm)"
             name="rt_dcia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_dcia_min}
             warning={getWarning('rt_dcia_min', 0, 50)}
             type="number"
@@ -382,6 +397,7 @@ export default function TaviForm() {
             label="Rt.DCIA max (mm)"
             name="rt_dcia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_dcia_max}
             warning={getWarning('rt_dcia_max', 0, 50)}
             type="number"
@@ -396,6 +412,7 @@ export default function TaviForm() {
             label="Rt.PEIA min (mm)"
             name="rt_peia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_peia_min}
             warning={getWarning('rt_peia_min', 0, 50)}
             type="number"
@@ -404,6 +421,7 @@ export default function TaviForm() {
             label="Rt.PEIA max (mm)"
             name="rt_peia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_peia_max}
             warning={getWarning('rt_peia_max', 0, 50)}
             type="number"
@@ -418,6 +436,7 @@ export default function TaviForm() {
             label="Rt.MEIA min (mm)"
             name="rt_meia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_meia_min}
             warning={getWarning('rt_meia_min', 0, 50)}
             type="number"
@@ -426,6 +445,7 @@ export default function TaviForm() {
             label="Rt.MEIA max (mm)"
             name="rt_meia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_meia_max}
             warning={getWarning('rt_meia_max', 0, 50)}
             type="number"
@@ -440,6 +460,7 @@ export default function TaviForm() {
             label="Rt.CFA min (mm)"
             name="rt_cfa_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_cfa_min}
             warning={getWarning('rt_cfa_min', 0, 50)}
             type="number"
@@ -448,6 +469,7 @@ export default function TaviForm() {
             label="Rt.CFA max (mm)"
             name="rt_cfa_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_cfa_max}
             warning={getWarning('rt_cfa_max', 0, 50)}
             type="number"
@@ -462,6 +484,7 @@ export default function TaviForm() {
             label="Lt.PCIA min (mm)"
             name="lt_pcia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_pcia_min}
             warning={getWarning('lt_pcia_min', 0, 50)}
             type="number"
@@ -470,6 +493,7 @@ export default function TaviForm() {
             label="Lt.PCIA max (mm)"
             name="lt_pcia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_pcia_max}
             warning={getWarning('lt_pcia_max', 0, 50)}
             type="number"
@@ -484,6 +508,7 @@ export default function TaviForm() {
             label="Lt.MCIA min (mm)"
             name="lt_mcia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_mcia_min}
             warning={getWarning('lt_mcia_min', 0, 50)}
             type="number"
@@ -492,6 +517,7 @@ export default function TaviForm() {
             label="Lt.MCIA max (mm)"
             name="lt_mcia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_mcia_max}
             warning={getWarning('lt_mcia_max', 0, 50)}
             type="number"
@@ -506,6 +532,7 @@ export default function TaviForm() {
             label="Lt.DCIA min (mm)"
             name="lt_dcia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_dcia_min}
             warning={getWarning('lt_dcia_min', 0, 50)}
             type="number"
@@ -514,6 +541,7 @@ export default function TaviForm() {
             label="Lt.DCIA max (mm)"
             name="lt_dcia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_dcia_max}
             warning={getWarning('lt_dcia_max', 0, 50)}
             type="number"
@@ -528,6 +556,7 @@ export default function TaviForm() {
             label="Lt.PEIA min (mm)"
             name="lt_peia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_peia_min}
             warning={getWarning('lt_peia_min', 0, 50)}
             type="number"
@@ -536,6 +565,7 @@ export default function TaviForm() {
             label="Lt.PEIA max (mm)"
             name="lt_peia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_peia_max}
             warning={getWarning('lt_peia_max', 0, 50)}
             type="number"
@@ -550,6 +580,7 @@ export default function TaviForm() {
             label="Lt.MEIA min (mm)"
             name="lt_meia_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_meia_min}
             warning={getWarning('lt_meia_min', 0, 50)}
             type="number"
@@ -558,6 +589,7 @@ export default function TaviForm() {
             label="Lt.MEIA max (mm)"
             name="lt_meia_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_meia_max}
             warning={getWarning('lt_meia_max', 0, 50)}
             type="number"
@@ -572,6 +604,7 @@ export default function TaviForm() {
             label="Lt.CFA min (mm)"
             name="lt_cfa_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_cfa_min}
             warning={getWarning('lt_cfa_min', 0, 50)}
             type="number"
@@ -580,6 +613,7 @@ export default function TaviForm() {
             label="Lt.CFA max (mm)"
             name="lt_cfa_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_cfa_max}
             warning={getWarning('lt_cfa_max', 0, 50)}
             type="number"
@@ -594,6 +628,7 @@ export default function TaviForm() {
             label="TAo 2ndIC (mm)"
             name="tao_2ndic"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.tao_2ndic}
             warning={getWarning('tao_2ndic', 0, 100)}
             type="number"
@@ -602,6 +637,7 @@ export default function TaviForm() {
             label="TAo 3rdIC (mm)"
             name="tao_3rdic"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.tao_3rdic}
             warning={getWarning('tao_3rdic', 0, 100)}
             type="number"
@@ -616,6 +652,7 @@ export default function TaviForm() {
             label="Rt.DSCA min (mm)"
             name="rt_dsca_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_dsca_min}
             warning={getWarning('rt_dsca_min', 0, 50)}
             type="number"
@@ -624,6 +661,7 @@ export default function TaviForm() {
             label="Rt.DSCA max (mm)"
             name="rt_dsca_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_dsca_max}
             warning={getWarning('rt_dsca_max', 0, 50)}
             type="number"
@@ -638,6 +676,7 @@ export default function TaviForm() {
             label="Rt.MSCA min (mm)"
             name="rt_msca_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_msca_min}
             warning={getWarning('rt_msca_min', 0, 50)}
             type="number"
@@ -646,6 +685,7 @@ export default function TaviForm() {
             label="Rt.MSCA max (mm)"
             name="rt_msca_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_msca_max}
             warning={getWarning('rt_msca_max', 0, 50)}
             type="number"
@@ -660,6 +700,7 @@ export default function TaviForm() {
             label="Rt.PSCA min (mm)"
             name="rt_psca_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_psca_min}
             warning={getWarning('rt_psca_min', 0, 50)}
             type="number"
@@ -668,6 +709,7 @@ export default function TaviForm() {
             label="Rt.PSCA max (mm)"
             name="rt_psca_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.rt_psca_max}
             warning={getWarning('rt_psca_max', 0, 50)}
             type="number"
@@ -682,6 +724,7 @@ export default function TaviForm() {
             label="Lt.DSCA min (mm)"
             name="lt_dsca_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_dsca_min}
             warning={getWarning('lt_dsca_min', 0, 50)}
             type="number"
@@ -690,6 +733,7 @@ export default function TaviForm() {
             label="Lt.DSCA max (mm)"
             name="lt_dsca_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_dsca_max}
             warning={getWarning('lt_dsca_max', 0, 50)}
             type="number"
@@ -704,6 +748,7 @@ export default function TaviForm() {
             label="Lt.MSCA min (mm)"
             name="lt_msca_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_msca_min}
             warning={getWarning('lt_msca_min', 0, 50)}
             type="number"
@@ -712,6 +757,7 @@ export default function TaviForm() {
             label="Lt.MSCA max (mm)"
             name="lt_msca_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_msca_max}
             warning={getWarning('lt_msca_max', 0, 50)}
             type="number"
@@ -726,6 +772,7 @@ export default function TaviForm() {
             label="Lt.PSCA min (mm)"
             name="lt_psca_min"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_psca_min}
             warning={getWarning('lt_psca_min', 0, 50)}
             type="number"
@@ -734,6 +781,7 @@ export default function TaviForm() {
             label="Lt.PSCA max (mm)"
             name="lt_psca_max"
             register={register}
+            onFieldChange={handleAutoSave}
             error={errors.lt_psca_max}
             warning={getWarning('lt_psca_max', 0, 50)}
             type="number"

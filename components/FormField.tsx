@@ -6,12 +6,13 @@ import { TaviFormData } from '@/types/form';
 interface FormFieldProps {
   label: string;
   name: keyof TaviFormData;
-  register: (name: keyof TaviFormData) => ReturnType<UseFormRegister<TaviFormData>>;
+  register: UseFormRegister<TaviFormData>;
   error?: FieldError;
   warning?: string | null;
   type?: 'text' | 'number';
   placeholder?: string;
   step?: string;
+  onFieldChange?: () => void;
 }
 
 export default function FormField({
@@ -23,7 +24,21 @@ export default function FormField({
   type = 'text',
   placeholder,
   step,
+  onFieldChange,
 }: FormFieldProps) {
+  const registration = register(name);
+  const { onChange: originalOnChange, ...rest } = registration;
+
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    // react-hook-formのonChangeを呼び出す
+    originalOnChange({
+      target: e.target,
+      type: e.type,
+    });
+    // 自動保存用のコールバックを呼び出す
+    onFieldChange?.();
+  };
+
   return (
     <div className="mb-2">
       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -32,7 +47,8 @@ export default function FormField({
       <input
         type={type}
         step={step || (type === 'number' ? '0.1' : undefined)}
-        {...register(name)}
+        {...rest}
+        onChange={handleChange}
         placeholder={placeholder}
         className={`w-full px-2 py-1.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
           error ? 'border-red-500' : warning ? 'border-yellow-500' : 'border-gray-300'
