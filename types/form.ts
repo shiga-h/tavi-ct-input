@@ -123,3 +123,4 @@ export interface AppSettings {
   autoSave: boolean; // 自動保存ON/OFF
 }
 
+
