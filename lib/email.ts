@@ -36,7 +36,6 @@ export function buildBody(f: TaviFormData): string {
     fmtDecimal1(f.ms_stretch),
     fmtDecimal1(f.perpen_lr),
     fmtDecimal1(f.perpen_crca),
-    five,
     fmtDecimal1(f.rootangle),
     five,
     fmtDecimal1(f.rt_pcia_min),
