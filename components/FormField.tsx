@@ -15,6 +15,7 @@ interface FormFieldProps {
   onFieldChange?: () => void;
   onFieldFocus?: (fieldName: keyof TaviFormData) => void;
   onFieldBlur?: () => void;
+  onFieldKeyDown?: (fieldName: keyof TaviFormData, e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export default function FormField({
@@ -29,9 +30,10 @@ export default function FormField({
   onFieldChange,
   onFieldFocus,
   onFieldBlur,
+  onFieldKeyDown,
 }: FormFieldProps) {
   const registration = register(name);
-  const { onChange: originalOnChange, onFocus: originalOnFocus, onBlur: originalOnBlur, ...rest } = registration;
+  const { onChange: originalOnChange, onFocus: originalOnFocus, onBlur: originalOnBlur, onKeyDown: originalOnKeyDown, ...rest } = registration;
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     // react-hook-formのonChangeを呼び出す
@@ -57,6 +59,13 @@ export default function FormField({
     onFieldBlur?.();
   };
 
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    // react-hook-formのonKeyDownを呼び出す
+    originalOnKeyDown?.(e);
+    // Enterキーで次のフィールドに移動
+    onFieldKeyDown?.(name, e);
+  };
+
   return (
     <div className="mb-2">
       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -69,6 +78,7 @@ export default function FormField({
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={`w-full px-2 py-1.5 text-sm text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 ${
           error ? 'border-red-500' : warning ? 'border-yellow-500' : 'border-gray-300'

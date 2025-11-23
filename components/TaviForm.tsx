@@ -29,6 +29,71 @@ export default function TaviForm() {
   const prevFormDataRef = useRef<string>('');
   // 現在フォーカス中のフィールド名を追跡（入力中のフィールドを保護するため）
   const focusedFieldRef = useRef<keyof TaviFormData | null>(null);
+  // フィールドの順序（Enterキーで次のフィールドに移動するため）
+  const fieldOrder: (keyof TaviFormData)[] = [
+    'case_name',
+    'analyst',
+    'phases_a',
+    'phases_b',
+    'ca_score',
+    'annulus_area',
+    'annulus_peri',
+    'annulus_min',
+    'annulus_max',
+    'stj_min',
+    'stj_max',
+    'sov_l',
+    'sov_r',
+    'sov_n',
+    'lcc_ht',
+    'rcc_ht',
+    'ncc_ht',
+    'lca_ht',
+    'rca_ht',
+    'ms_oblique',
+    'ms_stretch',
+    'perpen_lr',
+    'perpen_crca',
+    'rootangle',
+    'rt_pcia_min',
+    'rt_pcia_max',
+    'rt_mcia_min',
+    'rt_mcia_max',
+    'rt_dcia_min',
+    'rt_dcia_max',
+    'rt_peia_min',
+    'rt_peia_max',
+    'rt_meia_min',
+    'rt_meia_max',
+    'rt_cfa_min',
+    'rt_cfa_max',
+    'lt_pcia_min',
+    'lt_pcia_max',
+    'lt_mcia_min',
+    'lt_mcia_max',
+    'lt_dcia_min',
+    'lt_dcia_max',
+    'lt_peia_min',
+    'lt_peia_max',
+    'lt_meia_min',
+    'lt_meia_max',
+    'lt_cfa_min',
+    'lt_cfa_max',
+    'tao_2ndic',
+    'tao_3rdic',
+    'rt_dsca_min',
+    'rt_dsca_max',
+    'rt_msca_min',
+    'rt_msca_max',
+    'rt_psca_min',
+    'rt_psca_max',
+    'lt_dsca_min',
+    'lt_dsca_max',
+    'lt_msca_min',
+    'lt_msca_max',
+    'lt_psca_min',
+    'lt_psca_max',
+  ];
   
   // ストアのformDataが変更されたときにフォームをリセット
   useEffect(() => {
@@ -93,6 +158,28 @@ export default function TaviForm() {
     }, 100);
   };
 
+  // Enterキーで次のフィールドに移動
+  const handleFieldKeyDown = (fieldName: keyof TaviFormData, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === 'Go') {
+      e.preventDefault();
+      const currentIndex = fieldOrder.indexOf(fieldName);
+      if (currentIndex !== -1 && currentIndex < fieldOrder.length - 1) {
+        const nextFieldName = fieldOrder[currentIndex + 1];
+        const nextInput = document.querySelector(`input[name="${nextFieldName}"]`) as HTMLInputElement;
+        if (nextInput) {
+          // 少し遅延させてからフォーカス（キーボードの表示を考慮）
+          setTimeout(() => {
+            nextInput.focus();
+            // モバイルの場合、テキストを選択状態にする
+            if (nextInput.setSelectionRange) {
+              nextInput.setSelectionRange(0, nextInput.value.length);
+            }
+          }, 50);
+        }
+      }
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
       {/* 基本情報 */}
@@ -106,6 +193,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
           />
           <FormField
             label="解析者"
@@ -115,6 +203,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
           />
         </div>
       </div>
@@ -129,6 +218,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.phases_a}
             type="number"
             step="1"
@@ -140,6 +230,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.phases_b}
             type="number"
             step="1"
@@ -170,6 +261,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.annulus_area}
             warning={getWarning('annulus_area', 0, 1000)}
             type="number"
@@ -182,6 +274,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.annulus_peri}
             warning={getWarning('annulus_peri', 0, 200)}
             type="number"
@@ -193,6 +286,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.annulus_min}
             warning={getWarning('annulus_min', 0, 100)}
             type="number"
@@ -204,6 +298,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.annulus_max}
             warning={getWarning('annulus_max', 0, 100)}
             type="number"
@@ -221,6 +316,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.stj_min}
             warning={getWarning('stj_min', 0, 100)}
             type="number"
@@ -232,6 +328,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.stj_max}
             warning={getWarning('stj_max', 0, 100)}
             type="number"
@@ -249,6 +346,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.sov_l}
             warning={getWarning('sov_l', 0, 100)}
             type="number"
@@ -260,6 +358,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.sov_r}
             warning={getWarning('sov_r', 0, 100)}
             type="number"
@@ -271,6 +370,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.sov_n}
             warning={getWarning('sov_n', 0, 100)}
             type="number"
@@ -288,6 +388,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lcc_ht}
             warning={getWarning('lcc_ht', 0, 100)}
             type="number"
@@ -299,6 +400,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rcc_ht}
             warning={getWarning('rcc_ht', 0, 100)}
             type="number"
@@ -310,6 +412,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.ncc_ht}
             warning={getWarning('ncc_ht', 0, 100)}
             type="number"
@@ -321,6 +424,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lca_ht}
             warning={getWarning('lca_ht', 0, 100)}
             type="number"
@@ -332,6 +436,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rca_ht}
             warning={getWarning('rca_ht', 0, 100)}
             type="number"
@@ -349,6 +454,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.ms_oblique}
             warning={getWarning('ms_oblique', 0, 100)}
             type="number"
@@ -360,6 +466,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.ms_stretch}
             warning={getWarning('ms_stretch', 0, 100)}
             type="number"
@@ -377,6 +484,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.perpen_lr}
             warning={getWarning('perpen_lr', -180, 180)}
             type="number"
@@ -389,6 +497,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.perpen_crca}
             warning={getWarning('perpen_crca', -180, 180)}
             type="number"
@@ -410,6 +519,7 @@ export default function TaviForm() {
           onFieldChange={handleAutoSave}
           onFieldFocus={handleFieldFocus}
           onFieldBlur={handleFieldBlur}
+          onFieldKeyDown={handleFieldKeyDown}
         />
       </div>
 
@@ -423,6 +533,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_pcia_min}
             warning={getWarning('rt_pcia_min', 0, 50)}
             type="number"
@@ -434,6 +545,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_pcia_max}
             warning={getWarning('rt_pcia_max', 0, 50)}
             type="number"
@@ -451,6 +563,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_mcia_min}
             warning={getWarning('rt_mcia_min', 0, 50)}
             type="number"
@@ -462,6 +575,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_mcia_max}
             warning={getWarning('rt_mcia_max', 0, 50)}
             type="number"
@@ -479,6 +593,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_dcia_min}
             warning={getWarning('rt_dcia_min', 0, 50)}
             type="number"
@@ -490,6 +605,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_dcia_max}
             warning={getWarning('rt_dcia_max', 0, 50)}
             type="number"
@@ -507,6 +623,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_peia_min}
             warning={getWarning('rt_peia_min', 0, 50)}
             type="number"
@@ -518,6 +635,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_peia_max}
             warning={getWarning('rt_peia_max', 0, 50)}
             type="number"
@@ -535,6 +653,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_meia_min}
             warning={getWarning('rt_meia_min', 0, 50)}
             type="number"
@@ -546,6 +665,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_meia_max}
             warning={getWarning('rt_meia_max', 0, 50)}
             type="number"
@@ -563,6 +683,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_cfa_min}
             warning={getWarning('rt_cfa_min', 0, 50)}
             type="number"
@@ -574,6 +695,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_cfa_max}
             warning={getWarning('rt_cfa_max', 0, 50)}
             type="number"
@@ -591,6 +713,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_pcia_min}
             warning={getWarning('lt_pcia_min', 0, 50)}
             type="number"
@@ -602,6 +725,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_pcia_max}
             warning={getWarning('lt_pcia_max', 0, 50)}
             type="number"
@@ -619,6 +743,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_mcia_min}
             warning={getWarning('lt_mcia_min', 0, 50)}
             type="number"
@@ -630,6 +755,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_mcia_max}
             warning={getWarning('lt_mcia_max', 0, 50)}
             type="number"
@@ -647,6 +773,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_dcia_min}
             warning={getWarning('lt_dcia_min', 0, 50)}
             type="number"
@@ -658,6 +785,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_dcia_max}
             warning={getWarning('lt_dcia_max', 0, 50)}
             type="number"
@@ -675,6 +803,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_peia_min}
             warning={getWarning('lt_peia_min', 0, 50)}
             type="number"
@@ -686,6 +815,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_peia_max}
             warning={getWarning('lt_peia_max', 0, 50)}
             type="number"
@@ -703,6 +833,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_meia_min}
             warning={getWarning('lt_meia_min', 0, 50)}
             type="number"
@@ -714,6 +845,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_meia_max}
             warning={getWarning('lt_meia_max', 0, 50)}
             type="number"
@@ -731,6 +863,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_cfa_min}
             warning={getWarning('lt_cfa_min', 0, 50)}
             type="number"
@@ -742,6 +875,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_cfa_max}
             warning={getWarning('lt_cfa_max', 0, 50)}
             type="number"
@@ -759,6 +893,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.tao_2ndic}
             warning={getWarning('tao_2ndic', 0, 100)}
             type="number"
@@ -770,6 +905,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.tao_3rdic}
             warning={getWarning('tao_3rdic', 0, 100)}
             type="number"
@@ -787,6 +923,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_dsca_min}
             warning={getWarning('rt_dsca_min', 0, 50)}
             type="number"
@@ -798,6 +935,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_dsca_max}
             warning={getWarning('rt_dsca_max', 0, 50)}
             type="number"
@@ -815,6 +953,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_msca_min}
             warning={getWarning('rt_msca_min', 0, 50)}
             type="number"
@@ -826,6 +965,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_msca_max}
             warning={getWarning('rt_msca_max', 0, 50)}
             type="number"
@@ -843,6 +983,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_psca_min}
             warning={getWarning('rt_psca_min', 0, 50)}
             type="number"
@@ -854,6 +995,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.rt_psca_max}
             warning={getWarning('rt_psca_max', 0, 50)}
             type="number"
@@ -871,6 +1013,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_dsca_min}
             warning={getWarning('lt_dsca_min', 0, 50)}
             type="number"
@@ -882,6 +1025,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_dsca_max}
             warning={getWarning('lt_dsca_max', 0, 50)}
             type="number"
@@ -899,6 +1043,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_msca_min}
             warning={getWarning('lt_msca_min', 0, 50)}
             type="number"
@@ -910,6 +1055,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_msca_max}
             warning={getWarning('lt_msca_max', 0, 50)}
             type="number"
@@ -927,6 +1073,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_psca_min}
             warning={getWarning('lt_psca_min', 0, 50)}
             type="number"
@@ -938,6 +1085,7 @@ export default function TaviForm() {
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
             error={errors.lt_psca_max}
             warning={getWarning('lt_psca_max', 0, 50)}
             type="number"
