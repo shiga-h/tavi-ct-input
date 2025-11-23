@@ -104,7 +104,18 @@ export default function TaviForm() {
       if (focusedFieldRef.current === null) {
         // フォーカス中のフィールドがない場合のみリセット
         prevFormDataRef.current = currentFormDataStr;
-        reset(formData);
+        // 現在のフォームの値とストアの値をマージしてリセット（入力した値が消えないようにする）
+        const currentFormValues = getValues();
+        // ストアの値で上書きするが、現在のフォームの値で空欄を埋める
+        const mergedValues = { ...formData };
+        // 現在のフォームに値がある場合は、それを優先（入力中の値が消えないように）
+        Object.keys(currentFormValues).forEach((key) => {
+          const formValue = currentFormValues[key as keyof TaviFormData];
+          if (formValue !== '' && formValue !== undefined && formValue !== null) {
+            mergedValues[key as keyof TaviFormData] = formValue;
+          }
+        });
+        reset(mergedValues);
       }
       // フォーカス中のフィールドがある場合は、リセットを保留（handleFieldBlurで処理）
     }
@@ -170,15 +181,18 @@ export default function TaviForm() {
     // 遅延を長くして、自動保存とリセットの競合を防ぐ
     setTimeout(() => {
       focusedFieldRef.current = null;
-      // フォーカス解除後に、保留中のリセットを実行
-      // さらに少し遅延させて、自動保存の処理が完了するのを待つ
+      // フォーカス解除後、useEffectが自動的にリセットを実行する
+      // 自動保存の処理が完了するのを待つ（500ms + 余裕）
       setTimeout(() => {
-        const currentFormDataStr = JSON.stringify(formData);
-        if (prevFormDataRef.current !== currentFormDataStr) {
-          prevFormDataRef.current = currentFormDataStr;
-          reset(formData);
+        // 現在のフォームの値をストアに保存（自動保存がまだ実行されていない場合に備える）
+        const currentValues = getValues();
+        const currentFormDataStr = JSON.stringify(currentValues);
+        const storedFormDataStr = JSON.stringify(formData);
+        // フォームの値とストアの値が異なる場合、ストアを更新
+        if (currentFormDataStr !== storedFormDataStr) {
+          setFormData(currentValues);
         }
-      }, 100);
+      }, 600);
     }, 200);
   };
 
