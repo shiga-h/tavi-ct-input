@@ -100,9 +100,13 @@ export default function TaviForm() {
     const currentFormDataStr = JSON.stringify(formData);
     // 前回の値と異なる場合のみリセット（無限ループを防ぐ）
     // ただし、フォーカス中のフィールドがある場合はリセットしない（入力中のカーソルを保護）
-    if (prevFormDataRef.current !== currentFormDataStr && focusedFieldRef.current === null) {
-      prevFormDataRef.current = currentFormDataStr;
-      reset(formData);
+    if (prevFormDataRef.current !== currentFormDataStr) {
+      if (focusedFieldRef.current === null) {
+        // フォーカス中のフィールドがない場合のみリセット
+        prevFormDataRef.current = currentFormDataStr;
+        reset(formData);
+      }
+      // フォーカス中のフィールドがある場合は、リセットを保留（handleFieldBlurで処理）
     }
   }, [formData, reset]);
   
@@ -116,13 +120,29 @@ export default function TaviForm() {
     }
     
     // デバウンス: 500ms後に保存
+    // ただし、フォーカス中のフィールドがある場合は、フォーカス解除後に保存
     timeoutRef.current = setTimeout(() => {
-      const currentValues = getValues();
-      setFormData(currentValues);
+      // フォーカス中のフィールドがある場合は、保存を遅延させる
+      if (focusedFieldRef.current !== null) {
+        // フォーカス解除を待つ（追加で200ms待機）
+        setTimeout(() => {
+          const currentValues = getValues();
+          setFormData(currentValues);
+        }, 200);
+      } else {
+        const currentValues = getValues();
+        setFormData(currentValues);
+      }
     }, 500);
   };
 
-  const onSubmit = (data: TaviFormData) => {
+  const onSubmit = (data: TaviFormData, e?: React.BaseSyntheticEvent) => {
+    // Enterキーによる送信を防ぐ（送信ボタンからの送信のみ許可）
+    if (e && e.nativeEvent && (e.nativeEvent as any).submitter === null) {
+      // Enterキーによる送信の場合は何もしない
+      return;
+    }
+    
     const subject = data.case_name || 'TAVI術前CT所見';
     const body = buildBody(data);
     
@@ -147,15 +167,19 @@ export default function TaviForm() {
 
   const handleFieldBlur = () => {
     // 少し遅延させてからフォーカスを解除（連続入力時の保護）
+    // 遅延を長くして、自動保存とリセットの競合を防ぐ
     setTimeout(() => {
       focusedFieldRef.current = null;
       // フォーカス解除後に、保留中のリセットを実行
-      const currentFormDataStr = JSON.stringify(formData);
-      if (prevFormDataRef.current !== currentFormDataStr) {
-        prevFormDataRef.current = currentFormDataStr;
-        reset(formData);
-      }
-    }, 100);
+      // さらに少し遅延させて、自動保存の処理が完了するのを待つ
+      setTimeout(() => {
+        const currentFormDataStr = JSON.stringify(formData);
+        if (prevFormDataRef.current !== currentFormDataStr) {
+          prevFormDataRef.current = currentFormDataStr;
+          reset(formData);
+        }
+      }, 100);
+    }, 200);
   };
 
   // Enterキーで次のフィールドに移動
@@ -180,8 +204,33 @@ export default function TaviForm() {
     }
   };
 
+  // フォームレベルでEnterキーを処理（フォーム送信を防ぐ）
+  const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    // フォーム内のinput要素でEnterキーが押された場合は、フォーム送信を防ぐ
+    if (e.key === 'Enter' || e.key === 'Go') {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  };
+
+  // フォーム送信を処理（Enterキーによる送信を防ぐ）
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // Enterキーによる送信を検出して防ぐ
+    const activeElement = document.activeElement;
+    if (activeElement && activeElement.tagName === 'INPUT' && activeElement !== e.target) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    // 送信ボタンからの送信のみ許可
+    handleSubmit(onSubmit)(e);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+    <form onSubmit={handleFormSubmit} onKeyDown={handleFormKeyDown} className="space-y-2">
       {/* 基本情報 */}
       <div className="bg-white p-3 rounded-lg shadow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
