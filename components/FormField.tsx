@@ -13,6 +13,8 @@ interface FormFieldProps {
   placeholder?: string;
   step?: string;
   onFieldChange?: () => void;
+  onFieldFocus?: (fieldName: keyof TaviFormData) => void;
+  onFieldBlur?: () => void;
 }
 
 export default function FormField({
@@ -25,9 +27,11 @@ export default function FormField({
   placeholder,
   step,
   onFieldChange,
+  onFieldFocus,
+  onFieldBlur,
 }: FormFieldProps) {
   const registration = register(name);
-  const { onChange: originalOnChange, ...rest } = registration;
+  const { onChange: originalOnChange, onFocus: originalOnFocus, onBlur: originalOnBlur, ...rest } = registration;
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     // react-hook-formのonChangeを呼び出す
@@ -37,6 +41,20 @@ export default function FormField({
     });
     // 自動保存用のコールバックを呼び出す
     onFieldChange?.();
+  };
+
+  const handleFocus: React.FocusEventHandler<HTMLInputElement> = (e) => {
+    // react-hook-formのonFocusを呼び出す
+    originalOnFocus?.(e);
+    // フォーカス状態を親に通知
+    onFieldFocus?.(name);
+  };
+
+  const handleBlur: React.FocusEventHandler<HTMLInputElement> = (e) => {
+    // react-hook-formのonBlurを呼び出す
+    originalOnBlur?.(e);
+    // フォーカス解除を親に通知
+    onFieldBlur?.();
   };
 
   return (
@@ -49,6 +67,8 @@ export default function FormField({
         step={step || (type === 'number' ? '0.1' : undefined)}
         {...rest}
         onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         placeholder={placeholder}
         className={`w-full px-2 py-1.5 text-sm text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 ${
           error ? 'border-red-500' : warning ? 'border-yellow-500' : 'border-gray-300'
