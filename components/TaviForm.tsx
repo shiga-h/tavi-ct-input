@@ -1277,9 +1277,20 @@ export default function TaviForm() {
           type="button"
           onClick={() => {
             if (confirm('すべての入力内容をクリアしますか？')) {
+              // ストアをクリア
               resetFormData();
+              // フォームをリセット
               reset(initialFormData);
+              // prevFormDataRefを更新して、useEffectが再度実行されないようにする
               prevFormDataRef.current = JSON.stringify(initialFormData);
+              // フォーカス状態もリセット
+              focusedFieldRef.current = null;
+              isNavigatingRef.current = false;
+              // 自動保存のタイマーもクリア
+              if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+              }
             }
           }}
           className="w-full bg-gray-500 text-white py-3 px-6 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 font-medium text-lg mb-2"
