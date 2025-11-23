@@ -29,6 +29,8 @@ export default function TaviForm() {
   const prevFormDataRef = useRef<string>('');
   // 現在フォーカス中のフィールド名を追跡（入力中のフィールドを保護するため）
   const focusedFieldRef = useRef<keyof TaviFormData | null>(null);
+  // Enterキーで移動中かどうかを追跡（値が消えないようにするため）
+  const isNavigatingRef = useRef<boolean>(false);
   // フィールドの順序（Enterキーで次のフィールドに移動するため）
   const fieldOrder: (keyof TaviFormData)[] = [
     'case_name',
@@ -99,10 +101,10 @@ export default function TaviForm() {
   useEffect(() => {
     const currentFormDataStr = JSON.stringify(formData);
     // 前回の値と異なる場合のみリセット（無限ループを防ぐ）
-    // ただし、フォーカス中のフィールドがある場合はリセットしない（入力中のカーソルを保護）
+    // ただし、フォーカス中のフィールドがある場合やEnterキーで移動中はリセットしない
     if (prevFormDataRef.current !== currentFormDataStr) {
-      if (focusedFieldRef.current === null) {
-        // フォーカス中のフィールドがない場合のみリセット
+      if (focusedFieldRef.current === null && !isNavigatingRef.current) {
+        // フォーカス中のフィールドがなく、Enterキーで移動中でもない場合のみリセット
         prevFormDataRef.current = currentFormDataStr;
         // 現在のフォームの値とストアの値をマージしてリセット（入力した値が消えないようにする）
         const currentFormValues = getValues();
@@ -117,7 +119,7 @@ export default function TaviForm() {
         });
         reset(mergedValues);
       }
-      // フォーカス中のフィールドがある場合は、リセットを保留（handleFieldBlurで処理）
+      // フォーカス中のフィールドがある場合やEnterキーで移動中は、リセットを保留
     }
   }, [formData, reset]);
   
@@ -177,6 +179,11 @@ export default function TaviForm() {
   };
 
   const handleFieldBlur = () => {
+    // Enterキーで移動中の場合は、特別な処理をスキップ
+    if (isNavigatingRef.current) {
+      return;
+    }
+    
     // 少し遅延させてからフォーカスを解除（連続入力時の保護）
     // 遅延を長くして、自動保存とリセットの競合を防ぐ
     setTimeout(() => {
@@ -200,20 +207,37 @@ export default function TaviForm() {
   const handleFieldKeyDown = (fieldName: keyof TaviFormData, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === 'Go') {
       e.preventDefault();
+      
+      // Enterキーで移動中であることをマーク
+      isNavigatingRef.current = true;
+      
+      // 現在のフィールドの値を先に保存（値が消えないようにする）
+      const currentValues = getValues();
+      setFormData(currentValues);
+      
       const currentIndex = fieldOrder.indexOf(fieldName);
       if (currentIndex !== -1 && currentIndex < fieldOrder.length - 1) {
         const nextFieldName = fieldOrder[currentIndex + 1];
         const nextInput = document.querySelector(`input[name="${nextFieldName}"]`) as HTMLInputElement;
         if (nextInput) {
           // 少し遅延させてからフォーカス（キーボードの表示を考慮）
+          // また、値の保存が完了するのを待つ
           setTimeout(() => {
             nextInput.focus();
             // モバイルの場合、テキストを選択状態にする
             if (nextInput.setSelectionRange) {
               nextInput.setSelectionRange(0, nextInput.value.length);
             }
-          }, 50);
+            // 移動完了後、フラグをリセット
+            setTimeout(() => {
+              isNavigatingRef.current = false;
+            }, 200);
+          }, 100);
+        } else {
+          isNavigatingRef.current = false;
         }
+      } else {
+        isNavigatingRef.current = false;
       }
     }
   };
