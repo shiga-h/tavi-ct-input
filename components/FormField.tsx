@@ -60,10 +60,16 @@ export default function FormField({
   };
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    // react-hook-formのonKeyDownを呼び出す
-    originalOnKeyDown?.(e);
-    // Enterキーで次のフィールドに移動
-    onFieldKeyDown?.(name, e);
+    // EnterキーまたはGoキーの場合は、フォーム送信を防ぐ
+    if (e.key === 'Enter' || e.key === 'Go') {
+      e.preventDefault();
+      e.stopPropagation();
+      // Enterキーで次のフィールドに移動
+      onFieldKeyDown?.(name, e);
+    } else {
+      // その他のキーの場合は、react-hook-formのonKeyDownを呼び出す
+      originalOnKeyDown?.(e);
+    }
   };
 
   return (
