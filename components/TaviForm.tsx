@@ -5,12 +5,78 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { formSchema, validateRange } from '@/lib/validation';
 import { TaviFormData } from '@/types/form';
 import { useFormStore } from '@/store/formStore';
+
+// 初期フォームデータ（すべてクリア用）
+const initialFormData: TaviFormData = {
+  case_name: '',
+  analyst: '',
+  phases_a: '',
+  phases_b: '',
+  ca_score: '',
+  annulus_area: '',
+  annulus_peri: '',
+  annulus_min: '',
+  annulus_max: '',
+  stj_min: '',
+  stj_max: '',
+  sov_l: '',
+  sov_r: '',
+  sov_n: '',
+  lcc_ht: '',
+  rcc_ht: '',
+  ncc_ht: '',
+  lca_ht: '',
+  rca_ht: '',
+  ms_oblique: '',
+  ms_stretch: '',
+  perpen_lr: '',
+  perpen_crca: '',
+  rootangle: '',
+  rt_pcia_min: '',
+  rt_pcia_max: '',
+  rt_mcia_min: '',
+  rt_mcia_max: '',
+  rt_dcia_min: '',
+  rt_dcia_max: '',
+  rt_peia_min: '',
+  rt_peia_max: '',
+  rt_meia_min: '',
+  rt_meia_max: '',
+  rt_cfa_min: '',
+  rt_cfa_max: '',
+  lt_pcia_min: '',
+  lt_pcia_max: '',
+  lt_mcia_min: '',
+  lt_mcia_max: '',
+  lt_dcia_min: '',
+  lt_dcia_max: '',
+  lt_peia_min: '',
+  lt_peia_max: '',
+  lt_meia_min: '',
+  lt_meia_max: '',
+  lt_cfa_min: '',
+  lt_cfa_max: '',
+  tao_2ndic: '',
+  tao_3rdic: '',
+  rt_dsca_min: '',
+  rt_dsca_max: '',
+  rt_msca_min: '',
+  rt_msca_max: '',
+  rt_psca_min: '',
+  rt_psca_max: '',
+  lt_dsca_min: '',
+  lt_dsca_max: '',
+  lt_msca_min: '',
+  lt_msca_max: '',
+  lt_psca_min: '',
+  lt_psca_max: '',
+};
 import { buildBody, openGmailOrMailto } from '@/lib/email';
 import FormField from './FormField';
 import { useRef, useEffect } from 'react';
 
 export default function TaviForm() {
-  const { formData, setFormData, settings, autoSave } = useFormStore();
+  const { formData, setFormData, settings, autoSave, resetFormData } = useFormStore();
   const {
     register,
     handleSubmit,
@@ -335,6 +401,9 @@ export default function TaviForm() {
           type="number"
           step="0.1"
           onFieldChange={handleAutoSave}
+          onFieldFocus={handleFieldFocus}
+          onFieldBlur={handleFieldBlur}
+          onFieldKeyDown={handleFieldKeyDown}
         />
       </div>
 
@@ -1178,6 +1247,23 @@ export default function TaviForm() {
             type="number"
           />
         </div>
+      </div>
+
+      {/* すべてクリアボタン */}
+      <div className="bg-white p-3 rounded-lg shadow">
+        <button
+          type="button"
+          onClick={() => {
+            if (confirm('すべての入力内容をクリアしますか？')) {
+              resetFormData();
+              reset(initialFormData);
+              prevFormDataRef.current = JSON.stringify(initialFormData);
+            }
+          }}
+          className="w-full bg-gray-500 text-white py-3 px-6 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 font-medium text-lg mb-2"
+        >
+          すべてクリア
+        </button>
       </div>
 
       {/* 送信ボタン */}
