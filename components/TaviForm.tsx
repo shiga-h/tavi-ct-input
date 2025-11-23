@@ -99,30 +99,30 @@ export default function TaviForm() {
   const isNavigatingRef = useRef<boolean>(false);
   // フィールドの順序（Enterキーで次のフィールドに移動するため）
   const fieldOrder: (keyof TaviFormData)[] = [
-    'case_name',
-    'analyst',
-    'phases_a',
-    'phases_b',
-    'ca_score',
-    'annulus_area',
-    'annulus_peri',
-    'annulus_min',
-    'annulus_max',
-    'stj_min',
-    'stj_max',
-    'sov_l',
-    'sov_r',
-    'sov_n',
-    'lcc_ht',
-    'rcc_ht',
-    'ncc_ht',
-    'lca_ht',
-    'rca_ht',
-    'ms_oblique',
-    'ms_stretch',
-    'perpen_lr',
-    'perpen_crca',
-    'rootangle',
+    'case_name',           // 症例識別名
+    'analyst',             // 解析者
+    'phases_a',            // ES phase
+    'phases_b',            // ED phase
+    'ca_score',            // Ca score
+    'annulus_area',        // annulus area
+    'annulus_peri',        // annulus peri
+    'annulus_min',         // annulus min
+    'annulus_max',         // annulus max
+    'perpen_lr',           // perpen L/R
+    'perpen_crca',         // perpen cra/cau
+    'rootangle',           // rootangle
+    'rca_ht',              // RCA Ht.
+    'rcc_ht',              // RCC Ht.
+    'ncc_ht',              // NCC Ht.
+    'lca_ht',              // LCA Ht.
+    'lcc_ht',              // LCC Ht.
+    'ms_oblique',          // MS oblique
+    'ms_stretch',          // MS stretch
+    'stj_min',             // STJ min
+    'stj_max',             // STJ max
+    'sov_r',               // SOV R
+    'sov_n',               // SOV N
+    'sov_l',               // SOV L
     'rt_pcia_min',
     'rt_pcia_max',
     'rt_mcia_min',
@@ -365,7 +365,7 @@ export default function TaviForm() {
       <div className="bg-white p-3 rounded-lg shadow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <FormField
-            label="phases_a"
+            label="ES phase"
             name="phases_a"
             register={register}
             onFieldChange={handleAutoSave}
@@ -377,7 +377,7 @@ export default function TaviForm() {
             step="1"
           />
           <FormField
-            label="phases_b"
+            label="ED phase"
             name="phases_b"
             register={register}
             onFieldChange={handleAutoSave}
@@ -462,91 +462,68 @@ export default function TaviForm() {
         </div>
       </div>
 
-      {/* STJ */}
+      {/* perpen */}
       <div className="bg-white p-3 rounded-lg shadow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <FormField
-            label="STJ min (mm)"
-            name="stj_min"
+            label="perpen L/R (deg.)"
+            name="perpen_lr"
             register={register}
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
             onFieldKeyDown={handleFieldKeyDown}
-            error={errors.stj_min}
-            warning={getWarning('stj_min', 0, 100)}
+            error={errors.perpen_lr}
+            warning={getWarning('perpen_lr', -180, 180)}
             type="number"
+            step="0.1"
           />
           <FormField
-            label="STJ max (mm)"
-            name="stj_max"
+            label="perpen cra/cau (deg.)"
+            name="perpen_crca"
             register={register}
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
             onFieldKeyDown={handleFieldKeyDown}
-            error={errors.stj_max}
-            warning={getWarning('stj_max', 0, 100)}
+            error={errors.perpen_crca}
+            warning={getWarning('perpen_crca', -180, 180)}
             type="number"
+            step="0.1"
           />
         </div>
       </div>
 
-      {/* SOV diameter */}
+      {/* rootangle */}
       <div className="bg-white p-3 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-          <FormField
-            label="SOV diameter L (mm)"
-            name="sov_l"
-            register={register}
-            onFieldChange={handleAutoSave}
-            onFieldFocus={handleFieldFocus}
-            onFieldBlur={handleFieldBlur}
-            onFieldKeyDown={handleFieldKeyDown}
-            error={errors.sov_l}
-            warning={getWarning('sov_l', 0, 100)}
-            type="number"
-          />
-          <FormField
-            label="SOV diameter R (mm)"
-            name="sov_r"
-            register={register}
-            onFieldChange={handleAutoSave}
-            onFieldFocus={handleFieldFocus}
-            onFieldBlur={handleFieldBlur}
-            onFieldKeyDown={handleFieldKeyDown}
-            error={errors.sov_r}
-            warning={getWarning('sov_r', 0, 100)}
-            type="number"
-          />
-          <FormField
-            label="SOV diameter N (mm)"
-            name="sov_n"
-            register={register}
-            onFieldChange={handleAutoSave}
-            onFieldFocus={handleFieldFocus}
-            onFieldBlur={handleFieldBlur}
-            onFieldKeyDown={handleFieldKeyDown}
-            error={errors.sov_n}
-            warning={getWarning('sov_n', 0, 100)}
-            type="number"
-          />
-        </div>
+        <FormField
+          label="rootangle (deg.)"
+          name="rootangle"
+          register={register}
+          error={errors.rootangle}
+          warning={getWarning('rootangle', -180, 180)}
+          type="number"
+          step="0.1"
+          onFieldChange={handleAutoSave}
+          onFieldFocus={handleFieldFocus}
+          onFieldBlur={handleFieldBlur}
+          onFieldKeyDown={handleFieldKeyDown}
+        />
       </div>
 
       {/* Heights */}
       <div className="bg-white p-3 rounded-lg shadow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <FormField
-            label="LCC Ht. (mm)"
-            name="lcc_ht"
+            label="RCA Ht. (mm)"
+            name="rca_ht"
             register={register}
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
             onFieldKeyDown={handleFieldKeyDown}
-            error={errors.lcc_ht}
-            warning={getWarning('lcc_ht', 0, 100)}
+            error={errors.rca_ht}
+            warning={getWarning('rca_ht', 0, 100)}
             type="number"
           />
           <FormField
@@ -586,15 +563,15 @@ export default function TaviForm() {
             type="number"
           />
           <FormField
-            label="RCA Ht. (mm)"
-            name="rca_ht"
+            label="LCC Ht. (mm)"
+            name="lcc_ht"
             register={register}
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
             onFieldKeyDown={handleFieldKeyDown}
-            error={errors.rca_ht}
-            warning={getWarning('rca_ht', 0, 100)}
+            error={errors.lcc_ht}
+            warning={getWarning('lcc_ht', 0, 100)}
             type="number"
           />
         </div>
@@ -630,53 +607,76 @@ export default function TaviForm() {
         </div>
       </div>
 
-      {/* perpen */}
+      {/* STJ */}
       <div className="bg-white p-3 rounded-lg shadow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <FormField
-            label="perpen L/R (deg.)"
-            name="perpen_lr"
+            label="STJ min (mm)"
+            name="stj_min"
             register={register}
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
             onFieldKeyDown={handleFieldKeyDown}
-            error={errors.perpen_lr}
-            warning={getWarning('perpen_lr', -180, 180)}
+            error={errors.stj_min}
+            warning={getWarning('stj_min', 0, 100)}
             type="number"
-            step="0.1"
           />
           <FormField
-            label="perpen Cr/Ca (deg.)"
-            name="perpen_crca"
+            label="STJ max (mm)"
+            name="stj_max"
             register={register}
             onFieldChange={handleAutoSave}
             onFieldFocus={handleFieldFocus}
             onFieldBlur={handleFieldBlur}
             onFieldKeyDown={handleFieldKeyDown}
-            error={errors.perpen_crca}
-            warning={getWarning('perpen_crca', -180, 180)}
+            error={errors.stj_max}
+            warning={getWarning('stj_max', 0, 100)}
             type="number"
-            step="0.1"
           />
         </div>
       </div>
 
-      {/* rootangle */}
+      {/* SOV diameter */}
       <div className="bg-white p-3 rounded-lg shadow">
-        <FormField
-          label="rootangle (deg.)"
-          name="rootangle"
-          register={register}
-          error={errors.rootangle}
-          warning={getWarning('rootangle', -180, 180)}
-          type="number"
-          step="0.1"
-          onFieldChange={handleAutoSave}
-          onFieldFocus={handleFieldFocus}
-          onFieldBlur={handleFieldBlur}
-          onFieldKeyDown={handleFieldKeyDown}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <FormField
+            label="SOV R (mm)"
+            name="sov_r"
+            register={register}
+            onFieldChange={handleAutoSave}
+            onFieldFocus={handleFieldFocus}
+            onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
+            error={errors.sov_r}
+            warning={getWarning('sov_r', 0, 100)}
+            type="number"
+          />
+          <FormField
+            label="SOV N (mm)"
+            name="sov_n"
+            register={register}
+            onFieldChange={handleAutoSave}
+            onFieldFocus={handleFieldFocus}
+            onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
+            error={errors.sov_n}
+            warning={getWarning('sov_n', 0, 100)}
+            type="number"
+          />
+          <FormField
+            label="SOV L (mm)"
+            name="sov_l"
+            register={register}
+            onFieldChange={handleAutoSave}
+            onFieldFocus={handleFieldFocus}
+            onFieldBlur={handleFieldBlur}
+            onFieldKeyDown={handleFieldKeyDown}
+            error={errors.sov_l}
+            warning={getWarning('sov_l', 0, 100)}
+            type="number"
+          />
+        </div>
       </div>
 
       {/* Rt. PCIA */}
@@ -1037,6 +1037,28 @@ export default function TaviForm() {
             type="number"
           />
         </div>
+      </div>
+
+      {/* メール作成ボタン（中間） */}
+      <div className="bg-white p-3 rounded-lg shadow">
+        <button
+          type="button"
+          onClick={() => {
+            const currentValues = getValues();
+            const subject = currentValues.case_name || 'TAVI術前CT所見';
+            const body = buildBody(currentValues);
+            
+            if (settings.recipients.length === 0) {
+              alert('宛先が設定されていません。設定画面で宛先を設定してください。');
+              return;
+            }
+
+            openGmailOrMailto(settings.recipients, subject, body);
+          }}
+          className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-lg"
+        >
+          Gmailで作成
+        </button>
       </div>
 
       {/* TAo */}
