@@ -33,7 +33,9 @@ export default function FormField({
   onFieldKeyDown,
 }: FormFieldProps) {
   const registration = register(name);
-  const { onChange: originalOnChange, onFocus: originalOnFocus, onBlur: originalOnBlur, onKeyDown: originalOnKeyDown, ...rest } = registration;
+  // react-hook-formのregisterが返すオブジェクトにはonChange、onBlur、ref、nameが含まれる
+  // onFocusとonKeyDownは含まれないため、分割代入から除外する
+  const { onChange: originalOnChange, onBlur: originalOnBlur, ...rest } = registration;
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     // react-hook-formのonChangeを呼び出す
@@ -46,8 +48,7 @@ export default function FormField({
   };
 
   const handleFocus: React.FocusEventHandler<HTMLInputElement> = (e) => {
-    // react-hook-formのonFocusを呼び出す
-    originalOnFocus?.(e);
+    // onFocusはreact-hook-formが管理していないため、直接処理
     // フォーカス状態を親に通知
     onFieldFocus?.(name);
   };
@@ -66,10 +67,8 @@ export default function FormField({
       e.stopPropagation();
       // Enterキーで次のフィールドに移動
       onFieldKeyDown?.(name, e);
-    } else {
-      // その他のキーの場合は、react-hook-formのonKeyDownを呼び出す
-      originalOnKeyDown?.(e);
     }
+    // onKeyDownはreact-hook-formが管理していないため、追加処理は不要
   };
 
   return (
