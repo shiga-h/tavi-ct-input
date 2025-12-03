@@ -97,6 +97,8 @@ export default function TaviForm() {
   const focusedFieldRef = useRef<keyof TaviFormData | null>(null);
   // Enterキーで移動中かどうかを追跡（値が消えないようにするため）
   const isNavigatingRef = useRef<boolean>(false);
+  // リセット中かどうかを追跡（useEffectでのマージをスキップするため）
+  const isResettingRef = useRef<boolean>(false);
   // フィールドの順序（Enterキーで次のフィールドに移動するため）
   const fieldOrder: (keyof TaviFormData)[] = [
     'case_name',           // 症例識別名
@@ -172,6 +174,14 @@ export default function TaviForm() {
       if (focusedFieldRef.current === null && !isNavigatingRef.current) {
         // フォーカス中のフィールドがなく、Enterキーで移動中でもない場合のみリセット
         prevFormDataRef.current = currentFormDataStr;
+        
+        // リセット中の場合はマージせずにそのままストアの値を使用
+        if (isResettingRef.current) {
+          reset(formData);
+          isResettingRef.current = false;
+          return;
+        }
+        
         // 現在のフォームの値とストアの値をマージしてリセット（入力した値が消えないようにする）
         const currentFormValues = getValues();
         // ストアの値で上書きするが、現在のフォームの値で空欄を埋める
@@ -1277,20 +1287,22 @@ export default function TaviForm() {
           type="button"
           onClick={() => {
             if (confirm('すべての入力内容をクリアしますか？')) {
-              // ストアをクリア
-              resetFormData();
-              // フォームをリセット
-              reset(initialFormData);
-              // prevFormDataRefを更新して、useEffectが再度実行されないようにする
-              prevFormDataRef.current = JSON.stringify(initialFormData);
-              // フォーカス状態もリセット
-              focusedFieldRef.current = null;
-              isNavigatingRef.current = false;
-              // 自動保存のタイマーもクリア
+              // 自動保存のタイマーをまずクリア
               if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
                 timeoutRef.current = null;
               }
+              // フォーカス状態もリセット
+              focusedFieldRef.current = null;
+              isNavigatingRef.current = false;
+              // リセット中フラグを設定（useEffectでのマージをスキップするため）
+              isResettingRef.current = true;
+              // フォームをまずリセット
+              reset(initialFormData);
+              // ストアをクリア（これによりuseEffectがトリガーされる）
+              resetFormData();
+              // prevFormDataRefを更新
+              prevFormDataRef.current = JSON.stringify(initialFormData);
             }
           }}
           className="w-full bg-gray-500 text-white py-3 px-6 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 font-medium text-lg mb-2"
